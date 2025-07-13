@@ -1,0 +1,125 @@
+@extends('layouts.admin')
+@section('admin')
+
+<div class="page-content">
+    <nav class="page-breadcrumb d-flex justify-content-between align-items-center">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{{ route('category.index') }}">Category</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Edit Category</li>
+        </ol>
+        <a href="{{ route('category.index') }}" class="btn btn-sm btn-danger">Back</a>
+    </nav>
+
+    <div class="row">
+        <div class="col-md grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+
+                    <form id="categoryForm" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control" id="name" value="{{ $data->name }}">
+                            <p class="error"></p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="slug" class="form-label">Slug</label>
+                            <input type="text" name="slug" class="form-control" id="slug" value="{{ $data->slug }}" readonly>
+                            <p class="error"></p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="image" class="form-label">Image <span class="text-danger">*</span></label>
+                            <input type="file" name="image" class="form-control" id="image">
+                            <p class="error" id="image-error"></p>
+
+                            @if($data->image)
+                            <div class="mt-2">
+                                <img src="{{ asset('/category/' . $data->image) }}" width="80">
+                            </div>
+                            @endif
+                        </div>
+
+
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
+
+                            <select name="status" id="status" class="js-example-basic-multiple form-select" data-width="100%">
+
+                                <option value="Active" {{ $data->status === 'Active' ? 'selected' : '' }}>
+                                    Active
+                                </option>
+                                <option value="Inactive" {{ $data->status === 'Inactive' ? 'selected' : '' }}>
+                                    Inactive
+                                </option>
+                            </select>
+
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@endsection
+
+@push('scripts')
+<script>
+    $('#categoryForm').on('submit', function(e) {
+        e.preventDefault();
+
+        let formData = new FormData(this);
+
+        $('.error').html('').removeClass('invalid-feedback');
+        $('input').removeClass('is-invalid');
+
+        $.ajax({
+            url: "{{ route('category.update', $data->id) }}",
+            type: "POST",
+            data: formData,
+            contentType: false,
+            processData: false,
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                setTimeout(function() {
+                    toastr.success(response.message);
+                    window.location.href = response.redirect;
+                }, 1500);
+            },
+            error: function(xhr) {
+                let errors = xhr.responseJSON.errors;
+
+                $.each(errors, function(key, value) {
+                    let input = $(`[name="${key}"]`);
+                    input.addClass('is-invalid');
+
+                    if (key === 'image') {
+                        $('#image-error').addClass('invalid-feedback').html(value[0]);
+                    } else {
+                        input.next('.error').addClass('invalid-feedback').html(value[0]);
+                    }
+                });
+            }
+        });
+    });
+
+    // Slug generator
+    $('#name').on('keyup', function() {
+        var title = $(this).val();
+        var slug = title.toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-');
+        $('#slug').val(slug);
+    });
+</script>
+@endpush
