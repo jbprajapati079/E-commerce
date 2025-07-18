@@ -3,7 +3,9 @@
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\admin\CouponController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\SlideController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\ShopController;
@@ -32,6 +34,10 @@ Route::post('/remove-coupon', function () {
     return redirect()->back()->with('coupon_message', 'Coupon removed successfully.');
 })->name('remove.coupon');
 
+Route::get('cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+Route::post('cart/order_place', [CartController::class, 'order_place'])->name('cart.order_place');
+Route::get('cart/orderconfirm', [CartController::class, 'order_confirm'])->name('cart.order_confirm');
+
 Route::get('wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
 Route::post('wishlist/add', [WishlistController::class, 'addWishList'])->name('wishlist.add');
 
@@ -44,6 +50,17 @@ Route::delete('/wishlist/clear', [WishlistController::class, 'clear'])->name('wi
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/user/dashboard', [UserController::class, 'index'])->name('user.dashboard');
+
+    // order
+    Route::get('user/order', [UserController::class, 'order'])->name('user.order.list');
+    Route::get('user/order/view/{id}', [UserController::class, 'view'])->name('user.order.view');
+    Route::post('/user/order/cancel/{id}', [UserController::class, 'cancelOrder'])->name('user.order.cancel');
+    // Route::get('/order/add', [UserController::class, 'create'])->name('order.add');
+    // Route::post('/order/store', [UserController::class, 'store'])->name('order.store');
+    // Route::get('/order/edit/{id}', [UserController::class, 'edit'])->name('order.edit');
+    // Route::put('/order/update/{id}', [UserController::class, 'update'])->name('order.update');
+    // Route::delete('/order/delete/{id}', [UserController::class, 'delete'])->name('order.delete');
+
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -80,6 +97,21 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/coupon/edit/{id}', [CouponController::class, 'edit'])->name('coupon.edit');
     Route::put('/coupon/update/{id}', [CouponController::class, 'update'])->name('coupon.update');
     Route::delete('/coupon/delete/{id}', [CouponController::class, 'delete'])->name('coupon.delete');
+
+
+    //Order
+    Route::get('/order', [OrderController::class, 'index'])->name('order.index');
+    Route::get('/order/view/{id}', [OrderController::class, 'view'])->name('order.view');
+    Route::post('/order/update-status/{id}', [OrderController::class, 'updateStatus'])->name('order.updateStatus');
+
+    //Slide
+    Route::get('/slide', [SlideController::class, 'index'])->name('slide.index');
+    Route::get('/slide/add', [SlideController::class, 'create'])->name('slide.add');
+    Route::post('/slide/store', [SlideController::class, 'store'])->name('slide.store');
+    Route::get('/slide/edit/{id}', [SlideController::class, 'edit'])->name('slide.edit');
+    Route::put('/slide/update/{id}', [SlideController::class, 'update'])->name('slide.update');
+    Route::delete('/slide/delete/{id}', [SlideController::class, 'delete'])->name('slide.delete');
+
 });
 
 

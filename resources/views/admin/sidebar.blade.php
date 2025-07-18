@@ -47,6 +47,20 @@
                     <span class="link-title">Coupon</span>
                 </a>
             </li>
+
+            <li class="nav-item">
+                <a href="{{route('order.index')}}" class="nav-link">
+                    <i class="link-icon" data-feather="message-square"></i>
+                    <span class="link-title">Order</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="{{route('slide.index')}}" class="nav-link">
+                    <i class="link-icon" data-feather="message-square"></i>
+                    <span class="link-title">Slider</span>
+                </a>
+            </li>
         </ul>
     </div>
 </nav>
