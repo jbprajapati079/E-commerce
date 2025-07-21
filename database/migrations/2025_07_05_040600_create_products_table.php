@@ -27,6 +27,7 @@ return new class extends Migration
             $table->string('SKU')->nullable()->unique();
             $table->enum('stock_status', ['in_stock', 'out_of_stock']);
             $table->boolean('featured')->default(false)->index();
+            $table->unsignedBigInteger('size');
             $table->string('image');
             $table->json('gallery')->nullable();
             $table->enum('status', ['Active', 'Inactive'])->default('Active')->index();
