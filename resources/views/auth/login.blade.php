@@ -28,6 +28,12 @@
                 </li>
             </ul>
             <div class="tab-content pt-2" id="login_register_tab_content">
+                @if (session('status'))
+                <div class="alert alert-success">
+                    {{ session('status') }}
+                </div>
+                @endif
+
                 <div class="tab-pane fade show active" id="tab-item-login" role="tabpanel" aria-labelledby="login-tab">
                     <div class="login-form">
                         <form id="login-form" method="POST" action="{{ route('login') }}" class="needs-validation" novalidate="">
@@ -35,7 +41,9 @@
                             <div class="form-floating mb-3">
                                 <input id="email" class="form-control form-control_gray" name="email" required autocomplete="email" autofocus>
                                 <label for="email">Email address *</label>
-                                <span class="text-danger small error-text" id="email-error"></span>
+                                @error('email')
+                                <div class="text-danger">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <!-- <div class="form-floating mb-3">
@@ -47,7 +55,9 @@
                             <div class="form-floating mb-3 position-relative">
                                 <input id="password" type="password" class="form-control form-control_gray" name="password">
                                 <label for="password">Password *</label>
-                                <span class="text-danger small error-text" id="password-error"></span>
+                                @error('password')
+                                <div class="text-danger">{{ $message }}</div>
+                                @enderror
                                 <button type="button" class="btn btn-sm btn-secondary position-absolute top-50 end-0 translate-middle-y me-0 toggle-password" data-target="#password">
                                     <i class="fa fa-eye"></i>
                                 </button>
@@ -57,8 +67,8 @@
 
                             <div class="customer-option mt-4 text-center">
                                 <span class="text-secondary">No account yet?</span>
-                                <a href="register.html" class="btn-text js-show-register">Create Account</a> |
-                                <a href="my-account.html" class="btn-text js-show-register">My Account</a>
+                                <a href="{{route('register')}}" class="btn-text js-show-register">Create Account</a> |
+                                <a href="{{ route('password.request') }}" class="btn-text js-show-register">Forgot Password</a>
                             </div>
                         </form>
                     </div>

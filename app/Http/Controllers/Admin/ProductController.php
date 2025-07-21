@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Size;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\DataTables;
@@ -71,7 +72,8 @@ class ProductController extends Controller
         try {
             $categories = Category::where('status', 'Active')->get();
             $brands = Brand::where('status', 'Active')->get();
-            return view('admin.product.add', compact(['categories', 'brands']));
+            $sizes = Size::all();
+            return view('admin.product.add', compact(['categories', 'brands', 'sizes']));
         } catch (\Throwable $th) {
             throw $th;
         }
@@ -84,6 +86,7 @@ class ProductController extends Controller
             $validator = Validator::make($request->all(), [
                 'category_id'     => 'required',
                 'brand_id'        => 'required',
+                'size'            => 'required',
                 'name'            => 'required|string|max:255',
                 'slug'            => 'required|string|max:255|unique:products,slug',
                 'quantity'        => 'required|integer|min:1',
@@ -130,6 +133,7 @@ class ProductController extends Controller
                 'SKU' => $request->SKU,
                 'stock_status' => $request->stock_status,
                 'featured' => $request->featured ? true : false,
+                'size' => $request->size,
                 'image' => $imageName,
                 'gallery' => json_encode($galleryPaths),
             ]);
@@ -154,8 +158,9 @@ class ProductController extends Controller
         try {
             $categories = Category::where('status', 'Active')->get();
             $brands = Brand::where('status', 'Active')->get();
+            $sizes = Size::all();
             $data = Product::findOrFail($id);
-            return view('admin.product.edit', compact(['categories', 'brands', 'data']));
+            return view('admin.product.edit', compact(['categories', 'brands', 'data','sizes']));
         } catch (\Throwable $th) {
             throw $th;
         }
@@ -167,6 +172,7 @@ class ProductController extends Controller
         $validator = Validator::make($request->all(), [
             'category_id'     => 'required',
             'brand_id'        => 'required',
+            'size'            => 'required',
             'name'            => 'required|string|max:255',
             'slug'            => 'required|string|max:255|unique:products,slug' . $id,
             'quantity'        => 'required|integer|min:1',
@@ -192,7 +198,6 @@ class ProductController extends Controller
             $file = $request->file('image');
             $filename = time() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('product/image/'), $filename);
-            
         }
 
         $galleryPaths = json_decode($data->gallery, true) ?? [];
@@ -214,10 +219,8 @@ class ProductController extends Controller
                 $file->move(public_path('product/gallery'), $galleryfilename);
                 $galleryPaths[] = $galleryfilename;
             }
-
-            
         }
-        
+
 
         $data->category_id = $request->category_id;
         $data->brand_id = $request->brand_id;
@@ -231,6 +234,7 @@ class ProductController extends Controller
         $data->SKU = $request->SKU;
         $data->stock_status = $request->stock_status;
         $data->featured = $request->featured ? true : false;
+        $data->size = $request->size;
         $data->status = $request->status;
         $data->image = $filename;
         $data->gallery = json_encode($galleryPaths);

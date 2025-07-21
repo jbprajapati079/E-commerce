@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Size;
 use Illuminate\Http\Request;
 
 class ShopController extends Controller
@@ -19,30 +20,32 @@ class ShopController extends Controller
             $filter_category = $request->query('category');
             $min_price = $request->query('min_price') ? $request->query('min_price') : 10;
             $max_price = $request->query('max_price') ? $request->query('max_price') : 15000;
+
+            $sizes_selected = explode(',', $request->query('sizes', ''));
             switch ($order) {
                 case 1:
                     $o_column = 'created_at';
-                    $o_order = 'DESC';
+                    $o_order = 'ASC';
                     break;
                 case 2:
                     $o_column = 'created_at';
-                    $o_order = 'ASC';
+                    $o_order = 'DESC';
                     break;
                 case 3:
-                    $o_column = 'sale_price';
+                    $o_column = 'price';
                     $o_order = 'ASC';
                     break;
                 case 4:
-                    $o_column = 'sale_price';
+                    $o_column = 'price';
                     $o_order = 'DESC';
                     break;
                 default:
                     $o_column = 'id';
                     $o_order = 'DESC';
             }
-
             $brands = Brand::where('status', 'Active')->get();
             $categories = Category::where('status', 'Active')->get();
+            $sizes = Size::get();
 
             $query = Product::query();
 
@@ -56,6 +59,13 @@ class ShopController extends Controller
                 $query->whereIn('category_id', explode(',', $filter_category));
             }
 
+            //size
+            if ($request->sizes) {
+                $filter_sizes = explode(',', $request->sizes);
+                $query->whereHas('sizes', function ($q) use ($filter_sizes) {
+                    $q->whereIn('sizes.id', $filter_sizes);
+                });
+            }
             // price filter
             if ($request->min_price) {
                 $minPrice = $request->min_price;
@@ -72,9 +82,10 @@ class ShopController extends Controller
                         ->orWhere('sale_price', '<=', $maxPrice);
                 });
             }
+            $query->orderBy($o_column, $o_order);
 
-            $data = $query->get();
-            return view('frontend.shop.index', compact('data', 'order', 'brands', 'filter_brand', 'categories', 'filter_category', 'min_price', 'max_price'));
+            $data = $query->paginate(6)->withQueryString();
+            return view('frontend.shop.index', compact('data', 'order', 'brands', 'sizes','sizes_selected', 'filter_brand', 'categories', 'filter_category', 'min_price', 'max_price'));
         } catch (\Throwable $th) {
             throw $th;
         }

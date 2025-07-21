@@ -36,9 +36,21 @@ class UserController extends Controller
                     };
                     return $badge;
                 })
-                ->addColumn('order_date', fn ($row) => $row->created_at->format('d-m-Y h:i A'))
                 ->addColumn('total_item', fn ($row) => $row->orderItem->count())
-                ->addColumn('delivered_on', fn ($row) => $row->delivered_at ? $row->delivered_at->format('d-m-Y') : 'Not Delivered')
+                
+                
+                ->addColumn('order_date', function ($row) {
+                    return $row->created_at
+                        ? \Carbon\Carbon::parse($row->created_at)->format('d M Y, h:i A')
+                        : '--';
+                })
+
+                ->addColumn('delivered_on', function ($row) {
+                    return $row->delivered_date
+                        ? \Carbon\Carbon::parse($row->delivered_date)->format('d M Y, h:i A')
+                        : '--';
+                })
+
                 ->addColumn('action', function ($row) {
                     $viewUrl = route('user.order.view', $row->id);
                     $status = strtolower($row->status);

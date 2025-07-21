@@ -45,36 +45,6 @@
             </div>
 
 
-            <div class="accordion" id="color-filters">
-                <div class="accordion-item mb-4 pb-3">
-                    <h5 class="accordion-header" id="accordion-heading-1">
-                        <button class="accordion-button p-0 border-0 fs-5 text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#accordion-filter-2" aria-expanded="true" aria-controls="accordion-filter-2">
-                            Color
-                            <svg class="accordion-button__icon type2" viewBox="0 0 10 6" xmlns="http://www.w3.org/2000/svg">
-                                <g aria-hidden="true" stroke="none" fill-rule="evenodd">
-                                    <path d="M5.35668 0.159286C5.16235 -0.053094 4.83769 -0.0530941 4.64287 0.159286L0.147611 5.05963C-0.0492049 5.27473 -0.049205 5.62357 0.147611 5.83813C0.344427 6.05323 0.664108 6.05323 0.860924 5.83813L5 1.32706L9.13858 5.83867C9.33589 6.05378 9.65507 6.05378 9.85239 5.83867C10.0492 5.62357 10.0492 5.27473 9.85239 5.06018L5.35668 0.159286Z" />
-                                </g>
-                            </svg>
-                        </button>
-                    </h5>
-                    <div id="accordion-filter-2" class="accordion-collapse collapse show border-0" aria-labelledby="accordion-heading-1" data-bs-parent="#color-filters">
-                        <div class="accordion-body px-0 pb-0">
-                            <div class="d-flex flex-wrap">
-                                <a href="#" class="swatch-color js-filter" style="color: #0a2472"></a>
-                                <a href="#" class="swatch-color js-filter" style="color: #d7bb4f"></a>
-                                <a href="#" class="swatch-color js-filter" style="color: #282828"></a>
-                                <a href="#" class="swatch-color js-filter" style="color: #b1d6e8"></a>
-                                <a href="#" class="swatch-color js-filter" style="color: #9c7539"></a>
-                                <a href="#" class="swatch-color js-filter" style="color: #d29b48"></a>
-                                <a href="#" class="swatch-color js-filter" style="color: #e6ae95"></a>
-                                <a href="#" class="swatch-color js-filter" style="color: #d76b67"></a>
-                                <a href="#" class="swatch-color swatch_active js-filter" style="color: #bababa"></a>
-                                <a href="#" class="swatch-color js-filter" style="color: #bfdcc4"></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
 
             <div class="accordion" id="size-filters">
@@ -92,12 +62,14 @@
                     <div id="accordion-filter-size" class="accordion-collapse collapse show border-0" aria-labelledby="accordion-heading-size" data-bs-parent="#size-filters">
                         <div class="accordion-body px-0 pb-0">
                             <div class="d-flex flex-wrap">
-                                <a href="#" class="swatch-size btn btn-sm btn-outline-light mb-3 me-3 js-filter">XS</a>
-                                <a href="#" class="swatch-size btn btn-sm btn-outline-light mb-3 me-3 js-filter">S</a>
-                                <a href="#" class="swatch-size btn btn-sm btn-outline-light mb-3 me-3 js-filter">M</a>
-                                <a href="#" class="swatch-size btn btn-sm btn-outline-light mb-3 me-3 js-filter">L</a>
-                                <a href="#" class="swatch-size btn btn-sm btn-outline-light mb-3 me-3 js-filter">XL</a>
-                                <a href="#" class="swatch-size btn btn-sm btn-outline-light mb-3 me-3 js-filter">XXL</a>
+                                @foreach($sizes as $size)
+                                @php
+                                $isActive = in_array($size->id, $sizes_selected);
+                                @endphp
+                                <a href="#" class="swatch-size btn btn-sm btn-outline-light mb-3 me-3 js-filter-size" data-size="{{ $size->id }}" style="{{ $isActive ? 'background-color: #343a40; color: #fff; border-color: #343a40;' : '' }}">
+                                    {{ $size->name }}
+                                </a>
+                                @endforeach
                             </div>
                         </div>
                     </div>
@@ -255,35 +227,18 @@
 
                 <div class="shop-acs d-flex align-items-center justify-content-between justify-content-md-end flex-grow-1">
                     <select class="shop-acs__select form-select w-auto border-0 py-0 order-1 order-md-0" aria-label="Sort Items" name="orderby" id="orderby">
-                        <option value="-1" {{$order == -1 ? 'selected': ''}}>Default</option>
-                        <option value="1" {{$order == 1 ? 'selected': ''}}>Date, old to new</option>
-                        <option value="2" {{$order == 2 ? 'selected': ''}}>Date, new to old</option>
-                        <option value="3" {{$order == 3 ? 'selected': ''}}>Price, low to high</option>
-                        <option value="4" {{$order == 4 ? 'selected': ''}}>Price, high to low</option>
+                        <option value="-1" {{ $order == -1 ? 'selected' : '' }}>Default</option>
+                        <option value="1" {{ $order == 1 ? 'selected' : '' }}>Date, old to new</option>
+                        <option value="2" {{ $order == 2 ? 'selected' : '' }}>Date, new to old</option>
+                        <option value="3" {{ $order == 3 ? 'selected' : '' }}>Price, low to high</option>
+                        <option value="4" {{ $order == 4 ? 'selected' : '' }}>Price, high to low</option>
                     </select>
-
-                    <div class="shop-asc__seprator mx-3 bg-light d-none d-md-block order-md-0"></div>
-
-                    <div class="col-size align-items-center order-1 d-none d-lg-flex">
-                        <span class="text-uppercase fw-medium me-2">View</span>
-                        <button class="btn-link fw-medium me-2 js-cols-size" data-target="products-grid" data-cols="2">2</button>
-                        <button class="btn-link fw-medium me-2 js-cols-size" data-target="products-grid" data-cols="3">3</button>
-                        <button class="btn-link fw-medium js-cols-size" data-target="products-grid" data-cols="4">4</button>
-                    </div>
-
-                    <div class="shop-filter d-flex align-items-center order-0 order-md-3 d-lg-none">
-                        <button class="btn-link btn-link_f d-flex align-items-center ps-0 js-open-aside" data-aside="shopFilter">
-                            <svg class="d-inline-block align-middle me-2" width="14" height="10" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <use href="#icon_filter" />
-                            </svg>
-                            <span class="text-uppercase fw-medium d-inline-block align-middle">Filter</span>
-                        </button>
-                    </div>
                 </div>
             </div>
 
             <div class="products-grid row row-cols-2 row-cols-md-3" id="products-grid">
 
+                @if($data->count() > 0)
                 @foreach($data as $product)
                 <div class="product-card-wrapper">
                     <div class="product-card mb-3 mb-md-4 mb-xxl-5">
@@ -379,91 +334,103 @@
                     </div>
                 </div>
                 @endforeach
-
+                @else
+                <div class="d-flex justify-content-center align-items-center w-100">
+                    <div class="alert alert-warning text-center mb-0">
+                        🚫 No products found.
+                    </div>
+                </div>
+                @endif
 
             </div>
 
-            <nav class="shop-pages d-flex justify-content-between mt-3" aria-label="Page navigation">
-                <a href="#" class="btn-link d-inline-flex align-items-center">
-                    <svg class="me-1" width="7" height="11" viewBox="0 0 7 11" xmlns="http://www.w3.org/2000/svg">
-                        <use href="#icon_prev_sm" />
-                    </svg>
-                    <span class="fw-medium">PREV</span>
-                </a>
-                <ul class="pagination mb-0">
-                    <li class="page-item"><a class="btn-link px-1 mx-2 btn-link_active" href="#">1</a></li>
-                    <li class="page-item"><a class="btn-link px-1 mx-2" href="#">2</a></li>
-                    <li class="page-item"><a class="btn-link px-1 mx-2" href="#">3</a></li>
-                    <li class="page-item"><a class="btn-link px-1 mx-2" href="#">4</a></li>
-                </ul>
-                <a href="#" class="btn-link d-inline-flex align-items-center">
-                    <span class="fw-medium me-1">NEXT</span>
-                    <svg width="7" height="11" viewBox="0 0 7 11" xmlns="http://www.w3.org/2000/svg">
-                        <use href="#icon_next_sm" />
-                    </svg>
-                </a>
-            </nav>
+            <div class="mt-4 d-flex justify-content-center">
+                {{ $data->links('pagination::bootstrap-5') }}
+            </div>
         </div>
     </section>
 </main>
 
 <form action="{{route('shop.index')}}" id="formfilter">
-    <input type="hidden" name="order" id="order">
+    <input type="hidden" name="order" id="order" value="{{ $order }}">
     <input type="hidden" name="brands" id="brand_filter" value="{{ $filter_brand }}">
     <input type="hidden" name="category" id="category_filter" value="{{ $filter_category }}">
     <input type="hidden" name="min_price" id="min_price" value="{{ $min_price }}">
     <input type="hidden" name="max_price" id="max_price" value="{{ $max_price }}">
-    @endsection
+    <input type="hidden" name="sizes" id="selected-sizes" value="{{ request('sizes') }}">
+</form>
+@endsection
 
-    @push('scripts')
-    <script>
-        $(document).ready(function() {
-            $(document).on('change', '#orderby', function(e) {
-                e.preventDefault()
-                $('#order').val($('#orderby option:selected').val())
-                $('#formfilter').submit()
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        $('#orderby').on('change', function() {
+            var selectedValue = $(this).val();
 
-            })
+            $('#order').val(selectedValue);
+            $('#formfilter').submit();
+        });
 
-            $(document).on('change', '.brand-checkbox', function() {
-                let selectedBrands = [];
+        $(document).on('change', '.brand-checkbox', function() {
+            let selectedBrands = [];
 
-                $('.brand-checkbox:checked').each(function() {
-                    selectedBrands.push($(this).val());
-                });
-
-                $('#brand_filter').val(selectedBrands.join(','));
-                $('#formfilter').submit();
+            $('.brand-checkbox:checked').each(function() {
+                selectedBrands.push($(this).val());
             });
 
-            $(document).on('change', '.category-checkbox', function() {
-                let selectedcategorys = [];
+            $('#brand_filter').val(selectedBrands.join(','));
+            $('#formfilter').submit();
+        });
 
-                $('.category-checkbox:checked').each(function() {
-                    selectedcategorys.push($(this).val());
-                });
+        $(document).on('change', '.category-checkbox', function() {
+            let selectedcategorys = [];
 
-                $('#category_filter').val(selectedcategorys.join(','));
-                $('#formfilter').submit();
+            $('.category-checkbox:checked').each(function() {
+                selectedcategorys.push($(this).val());
             });
 
-            $('[name="price_range"]').on('change', function() {
-                let priceRange = $(this).val();
-                let parts = priceRange.split(',');
-
-                let min_price = parts[0];
-                let max_price = parts[1];
+            $('#category_filter').val(selectedcategorys.join(','));
+            $('#formfilter').submit();
+        });
 
 
-                $('#min_price').val(min_price)
-                $('#max_price').val(max_price)
+        $('[name="price_range"]').on('change', function() {
+            let priceRange = $(this).val();
+            let parts = priceRange.split(',');
 
-                setTimeout(function() {
-                    $('#formfilter').submit();
-                }, 2000);
+            let min_price = parts[0];
+            let max_price = parts[1];
 
-            })
+
+            $('#min_price').val(min_price)
+            $('#max_price').val(max_price)
+
+            setTimeout(function() {
+                $('#formfilter').submit();
+            }, 2000);
 
         })
-    </script>
-    @endpush
+
+    })
+
+    $(document).on('click', '.js-filter-size', function(e) {
+        e.preventDefault();
+
+        // Toggle 'active' class for styling
+        $(this).toggleClass('active');
+
+        let selectedSizes = [];
+
+        // Collect all active size buttons
+        $('.js-filter-size.active').each(function() {
+            selectedSizes.push($(this).data('size'));
+        });
+
+        // Set hidden input value
+        $('#selected-sizes').val(selectedSizes.join(','));
+
+        // Submit the form
+        $('#formfilter').submit();
+    });
+</script>
+@endpush

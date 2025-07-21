@@ -14,6 +14,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Surfsidemedia\Shoppingcart\Facades\Cart;
+use App\Mail\OrderPlacedMail;
+use Illuminate\Support\Facades\Mail;
 
 class CartController extends Controller
 {
@@ -441,8 +443,7 @@ class CartController extends Controller
             $address = Address::where('user_id', Auth::id())->where('is_default', true)->first();
 
             if (!$address) {
-                // Validate input if no default address found
-                $validator = Validator::make($request->all(), [
+                $request->validate([
                     'name' => 'required|string|max:255',
                     'address' => 'required|string',
                     'phone' => 'required|digits:10',
@@ -451,7 +452,8 @@ class CartController extends Controller
                     'state' => 'required|string',
                     'city' => 'required|string',
                     'locality' => 'required|string',
-                    'landmark' => 'required|string'
+                    'landmark' => 'required|string',
+                    'mode'     => 'required',
                 ]);
 
 
@@ -471,31 +473,11 @@ class CartController extends Controller
                 ]);
             }
 
-            // Step 2: Always update checkout session (coupon logic included)
             $this->setAmountForCheckout();
 
-            // Step 3: Create order
             $checkout = Session::get('checkout');
-            // dd($checkout);
+            
             $orderID = rand(1111, 9999);
-            // $order = Order::create([
-            //     'user_id' => Auth::id(),
-            //     'order_id' => $orderID,
-            //     'subtotal' => Session::get('checkout')['subtotal'],
-            //     'discount' => Session::get('checkout')['discount'] ?? 0.00,
-            //     'discount_amount' => Session::get('checkout')['discount_amount'] ?? 0.00,
-            //     'total' => Session::get('checkout')['total'],
-            //     'name' => $address->name,
-            //     'phone' => $address->phone,
-            //     'locality' => $address->locality,
-            //     'address' => $address->address,
-            //     'country' => $address->country,
-            //     'state' => $address->state,
-            //     'city' => $address->city,
-            //     'landmark' => $address->landmark,
-            //     'zipcode' => $address->zipcode,
-            // ]);
-
             $order = Order::create([
                 'user_id' => Auth::id(),
                 'order_id' => $orderID,
@@ -548,6 +530,7 @@ class CartController extends Controller
             Session::forget('applied_coupon');
             Session::put('order_id', $order->id);
 
+            Mail::to(Auth::user()->email)->send(new OrderPlacedMail($order));
             return redirect()->route('cart.order_confirm');
         } catch (\Throwable $th) {
             // Optionally log the error

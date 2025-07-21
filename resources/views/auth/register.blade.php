@@ -49,23 +49,13 @@
                                 <span class="text-danger small error-text" id="mobile-error"></span>
                             </div>
 
-                            <!-- <div class="form-floating mb-3">
-                                <input id="password" type="password" class="form-control form-control_gray" name="password">
-                                <label for="password">Password *</label>
-                                <span class="text-danger small error-text" id="password-error"></span>
-                            </div>
-
-                            <div class="form-floating mb-3">
-                                <input id="password_confirmation" type="password" class="form-control form-control_gray" name="password_confirmation">
-                                <label for="password_confirmation">Confirm Password *</label>
-                                <span class="text-danger small error-text" id="password_confirmation-error"></span>
-                            </div> -->
 
                             <div class="form-floating mb-3 position-relative">
                                 <input id="password" type="password" class="form-control form-control_gray" name="password">
                                 <label for="password">Password *</label>
+
                                 <span class="text-danger small error-text" id="password-error"></span>
-                                <button type="button" class="btn btn-sm btn-secondary position-absolute top-50 end-0 translate-middle-y me-0 toggle-password" data-target="#password">
+                                <button type="button" class="btn btn-sm btn-secondary toggle-password" data-target="#password" style="position: absolute; top: 35%; right: 0px; transform: translateY(-50%); z-index: 2;">
                                     <i class="fa fa-eye"></i>
                                 </button>
                             </div>
@@ -102,37 +92,69 @@
 </html>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
 <script>
-    $(document).ready(function() {
-        $('.toggle-password').on('click', function() {
-            const input = $($(this).data('target'));
-            const icon = $(this).find('i');
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
 
-            if (input.attr('type') === 'password') {
-                input.attr('type', 'text');
-                icon.removeClass('fa-eye').addClass('fa-eye-slash');
-            } else {
-                input.attr('type', 'password');
-                icon.removeClass('fa-eye-slash').addClass('fa-eye');
-            }
-        });
+    $('#register-form').on('submit', function(e) {
+        e.preventDefault();
+        $('.error-text').text(''); // Clear errors
 
-        // Generate random strong password
-        $('#generate-password').on('click', function() {
-            function generatePassword(length = 12) {
-                const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
-                let password = "";
-                for (let i = 0; i < length; i++) {
-                    const randomIndex = Math.floor(Math.random() * charset.length);
-                    password += charset[randomIndex];
+        const formData = $(this).serialize();
+
+        $.ajax({
+            type: 'POST',
+            url: "{{ route('register') }}",
+            data: formData,
+            success: function(response) {
+                if (response.success) {
+                    window.location.href = response.redirect;
                 }
-                return password;
+            },
+            error: function(xhr) {
+                if (xhr.status === 422) {
+                    const errors = xhr.responseJSON.errors;
+                    $.each(errors, function(key, value) {
+                        $('#' + key + '-error').text(value[0]);
+                    });
+                }
             }
-
-            const newPassword = generatePassword();
-            $('#password').val(newPassword);
-            $('#password_confirmation').val(newPassword);
-            alert('Password generated and filled in both fields.');
         });
+    });
+
+    $('.toggle-password').on('click', function() {
+        const input = $($(this).data('target'));
+        const icon = $(this).find('i');
+
+        if (input.attr('type') === 'password') {
+            input.attr('type', 'text');
+            icon.removeClass('fa-eye').addClass('fa-eye-slash');
+        } else {
+            input.attr('type', 'password');
+            icon.removeClass('fa-eye-slash').addClass('fa-eye');
+        }
+    });
+
+    // Generate random strong password
+    $('#generate-password').on('click', function() {
+        function generatePassword(length = 12) {
+            const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+            let password = "";
+            for (let i = 0; i < length; i++) {
+                const randomIndex = Math.floor(Math.random() * charset.length);
+                password += charset[randomIndex];
+            }
+            return password;
+        }
+
+        const newPassword = generatePassword();
+        $('#password').val(newPassword);
+        $('#password_confirmation').val(newPassword);
+        alert('Password generated and filled in both fields.');
     });
 </script>

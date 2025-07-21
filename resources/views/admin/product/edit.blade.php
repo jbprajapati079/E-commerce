@@ -100,6 +100,17 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="brand_id" class="form-label">Size <span class="text-danger">*</span></label>
+                            <select name="size" id="size" class="form-select js-example-basic-multiple" data-width="100%">
+                                <option value="">Select Size</option>
+                                @foreach($sizes as $size)
+                                <option value="{{$size->id}}" {{$data->size == $size->id ? 'selected' : ''}}>{{$size->name}}</option>
+                                @endforeach
+                            </select>
+                            <p class="error"></p>
+                        </div>
+
+                        <div class="mb-3">
                             <label for="image" class="form-label">Image <span class="text-danger">*</span></label>
                             <input type="file" name="image" class="form-control" id="image" accept="image/*">
                             <p class="error" id="image-error"></p>

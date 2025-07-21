@@ -6,7 +6,6 @@
             <li class="breadcrumb-item"><a href="{{ route('order.index') }}">Order</a></li>
             <li class="breadcrumb-item active" aria-current="page">List</li>
         </ol>
-        <a href="{{ route('product.add') }}" class="btn btn-sm btn-primary">Add</a>
     </nav>
 
     <div class="row">
@@ -18,14 +17,9 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Order Id</th>
-                                    <th>Name</th>
-                                    <th>Phone</th>
-                                    <th>Subtotal</th>
-                                    <th>Total</th>
+                                    <th>Order Details</th>
+                                    <th>Personal Info</th>
                                     <th>Status</th>
-                                    <th>Order Date</th>
-                                    <th>Total Item</th>
                                     <th>Delivered On</th>
                                     <th>Action</th>
                                 </tr>
@@ -55,7 +49,7 @@
                                 <option value="ordered">Ordered</option>
                                 <option value="delivered">Delivered</option>
                                 <option value="canceled">Cancelled</option>
-                                
+
                             </select>
                         </div>
                     </div>
@@ -82,37 +76,37 @@
                     orderable: false,
                     searchable: false
                 },
+                
                 {
-                    data: 'order_id',
-                    name: 'order_id'
+                    data: null,
+                    
+                    name: 'order_id',
+                    render: function(data, type, row) {
+                        console.log(row);
+                        return `
+                            <strong>Order ID:</strong> ${row.order_id}<br>
+                            <strong>Sub Total:</strong> ${row.subtotal}<br>
+                            <strong>Item:</strong> ${row.total_item}<br>
+                            <strong>Total:</strong> ${row.total}<br>
+                            <strong>Order Date:</strong> ${row.order_date}
+                        `
+                    }
+                    
                 },
                 {
-                    data: 'name',
-                    name: 'name'
-                },
-                {
-                    data: 'phone',
-                    name: 'phone'
-                },
-                {
-                    data: 'subtotal',
-                    name: 'subtotal'
-                },
-                {
-                    data: 'total',
-                    name: 'total'
+                    data: null,
+                    name: 'name',
+                    render: function(data, type, row) {
+                        return `
+                            <strong>Name:</strong> ${row.name}<br>
+                            <strong>Email:</strong> ${row.user.email}<br>
+                            <strong>Phone:</strong> ${row.phone}
+                        `
+                    }
                 },
                 {
                     data: 'status',
                     name: 'status'
-                },
-                {
-                    data: 'order_date',
-                    name: 'order_date'
-                },
-                {
-                    data: 'total_item',
-                    name: 'total_item'
                 },
                 {
                     data: 'delivered_on',

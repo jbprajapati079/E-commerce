@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Surfsidemedia\Shoppingcart\Facades\Cart;
 
@@ -11,14 +12,23 @@ class WishlistController extends Controller
     public function index()
     {
         try {
-            $item = Cart::instance('wishlist')->content();
-            return view('frontend.wishlist.index', compact('item'));
+            $items = Cart::instance('wishlist')->content();
+            $productIds = $items->pluck('id');
+            $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
+
+            $wishlistItems = $items->map(function ($item) use ($products) {
+                $product = $products[$item->id] ?? null;
+                $item->slug = $product?->slug;
+            });
+
+            return view('frontend.wishlist.index', compact('items'));
         } catch (\Throwable $th) {
             throw $th;
         }
     }
 
-    public function addWishList(Request $request){
+    public function addWishList(Request $request)
+    {
         $item = Cart::instance('wishlist')->add($request->id, $request->name, $request->quantity, $request->price)->associate('App\Models\Product');
         return redirect()->back();
     }

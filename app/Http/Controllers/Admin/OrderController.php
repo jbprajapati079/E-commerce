@@ -13,8 +13,7 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = Order::with(['user'])->orderBy('created_at', 'DESC');
-
+            $data = Order::with(['user','orderItem'])->orderBy('created_at', 'DESC');
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('status', function ($row) {
@@ -38,8 +37,14 @@ class OrderController extends Controller
                     return $badge;
                 })
 
+                // ->addColumn('order_date', function ($row) {
+                //     return $row->created_at->format('d-m-Y h:i A');
+                // })
+
                 ->addColumn('order_date', function ($row) {
-                    return $row->created_at->format('d-m-Y h:i A');
+                    return $row->created_at
+                        ? \Carbon\Carbon::parse($row->created_at)->format('d M Y, h:i A')
+                        : '--';
                 })
 
                 ->addColumn('total_item', function ($row) {
@@ -92,7 +97,7 @@ class OrderController extends Controller
 
         if ($request->status == 'ordered') {
             $order->status = $request->status;
-            $order->updated_date = Carbon::now('Asia/Kolkata');
+            $order->updated_at = Carbon::now('Asia/Kolkata');
             $order->save();
         } elseif ($request->status == 'delivered') {
             $order->status = $request->status;

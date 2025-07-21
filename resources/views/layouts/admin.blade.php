@@ -82,6 +82,7 @@ License: For each use you must have a valid license purchased only from above li
     <!-- Plugin js for this page -->
     <script src="{{asset('/admin/assets/vendors/flatpickr/flatpickr.min.js')}}"></script>
     <script src="{{asset('/admin/assets/vendors/apexcharts/apexcharts.min.js')}}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- End plugin js for this page -->
 

@@ -10,8 +10,8 @@
             <!-- Sidebar -->
             <div class="col-lg-2">
                 <ul class="account-nav">
-                    <li><a href="{{ url('/account-dashboard') }}" class="menu-link">Dashboard</a></li>
-                    <li><a href="{{ url('/account-orders') }}" class="menu-link">Orders</a></li>
+                    <li><a href="{{ route('user.dashboard') }}" class="menu-link">Dashboard</a></li>
+                    <li><a href="{{ route('user.order.list') }}" class="menu-link">Orders</a></li>
                     <li><a href="{{ url('/account-addresses') }}" class="menu-link">Addresses</a></li>
                     <li><a href="{{ url('/account-details') }}" class="menu-link">Account Details</a></li>
                     <li><a href="{{ url('/account-wishlists') }}" class="menu-link">Wishlist</a></li>
