@@ -63,7 +63,7 @@
             </li>
 
             <li class="nav-item">
-                <a href="{{route('contact.index')}}" class="nav-link">
+                <a href="{{route('admin.contact.index')}}" class="nav-link">
                     <i class="link-icon" data-feather="message-square"></i>
                     <span class="link-title">Contact</span>
                 </a>

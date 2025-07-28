@@ -27,6 +27,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('search', [HomeController::class, 'search'])->name('home.search');
 
+// Route::get('about', [HomeController::class, 'about'])->name('home.about');
+
+
+Route::get('about',function(){
+    return view('about');
+})->name('about');
 
 Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
 Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
@@ -87,13 +93,13 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::put('/brand/update/{id}', [BrandController::class, 'update'])->name('brand.update');
     Route::delete('/brand/delete/{id}', [BrandController::class, 'delete'])->name('brand.delete');
 
-     //Sizes
-     Route::get('/size', [SizeController::class, 'index'])->name('size.index');
-     Route::get('/size/add', [SizeController::class, 'create'])->name('size.add');
-     Route::post('/size/store', [SizeController::class, 'store'])->name('size.store');
-     Route::get('/size/edit/{id}', [SizeController::class, 'edit'])->name('size.edit');
-     Route::put('/size/update/{id}', [SizeController::class, 'update'])->name('size.update');
-     Route::delete('/size/delete/{id}', [SizeController::class, 'delete'])->name('size.delete');
+    //Sizes
+    Route::get('/size', [SizeController::class, 'index'])->name('size.index');
+    Route::get('/size/add', [SizeController::class, 'create'])->name('size.add');
+    Route::post('/size/store', [SizeController::class, 'store'])->name('size.store');
+    Route::get('/size/edit/{id}', [SizeController::class, 'edit'])->name('size.edit');
+    Route::put('/size/update/{id}', [SizeController::class, 'update'])->name('size.update');
+    Route::delete('/size/delete/{id}', [SizeController::class, 'delete'])->name('size.delete');
 
     //Category
     Route::get('/categories', [CategoryController::class, 'index'])->name('category.index');
@@ -110,6 +116,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/product/edit/{id}', [ProductController::class, 'edit'])->name('product.edit');
     Route::put('/product/update/{id}', [ProductController::class, 'update'])->name('product.update');
     Route::delete('/product/delete/{id}', [ProductController::class, 'delete'])->name('product.delete');
+    Route::get('product/view/{id}', [ProductController::class, 'viewProductFromQr'])->name('product.view');
 
     //Coupon
     Route::get('/coupon', [CouponController::class, 'index'])->name('coupon.index');
@@ -133,8 +140,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::put('/slide/update/{id}', [SlideController::class, 'update'])->name('slide.update');
     Route::delete('/slide/delete/{id}', [SlideController::class, 'delete'])->name('slide.delete');
 
-    Route::get('contact', [AdminContactController::class, 'index'])->name('contact.index');
-    Route::delete('/contact/delete/{id}', [AdminContactController::class, 'delete'])->name('contact.delete');
+    Route::get('admin/contact', [AdminContactController::class, 'index'])->name('admin.contact.index');
+    Route::delete('admin/contact/delete/{id}', [AdminContactController::class, 'delete'])->name('admin.contact.delete');
 });
 
 

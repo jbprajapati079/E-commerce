@@ -6,7 +6,9 @@
             <li class="breadcrumb-item"><a href="{{ route('product.index') }}">Product</a></li>
             <li class="breadcrumb-item active" aria-current="page">List</li>
         </ol>
-        <a href="{{ route('product.add') }}" class="btn btn-sm btn-primary">Add</a>
+        <div>
+            <a href="{{ route('product.add') }}" class="btn btn-sm btn-primary">Add</a>
+        </div>
     </nav>
 
     <div class="row">
@@ -38,9 +40,28 @@
         </div>
     </div>
 </div>
+
+<!-- QR Scanner Modal -->
+<div class="modal fade" id="qrScanModal" tabindex="-1" aria-labelledby="qrScanLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Scan Product QR Code</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div id="qr-reader" style="width: 500px; margin:auto;"></div>
+                <div id="qr-result" class="mt-3 text-success fw-bold"></div>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
+<!-- Include html5-qrcode script -->
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
 <script>
     $(document).ready(function() {
         $('#producttable').DataTable({
@@ -61,52 +82,68 @@
                 },
                 {
                     data: 'name',
-                    name: 'name'
+                    name: 'name',
+                    orderable: true,
+                    searchable: true
                 },
                 {
                     data: 'slug',
-                    name: 'slug'
+                    name: 'slug',
+                    orderable: true,
+                    searchable: true
                 },
                 {
                     data: 'category',
-                    name: 'category.name'
+                    name: 'category.name',
+                    orderable: true,
+                    searchable: true
                 },
                 {
                     data: 'brand',
-                    name: 'brand.name'
+                    name: 'brand.name',
+                    orderable: true,
+                    searchable: true
                 },
                 {
                     data: 'quantity',
-                    name: 'quantity'
+                    name: 'quantity',
+                    orderable: true,
+                    searchable: true
                 },
                 {
                     data: 'price',
-                    name: 'price'
+                    name: 'price',
+                    orderable: true,
+                    searchable: true
                 },
                 {
                     data: 'stock_status',
-                    name: 'stock_status'
+                    name: 'stock_status',
+                    orderable: true,
+                    searchable: true
                 },
                 {
                     data: 'featured',
-                    name: 'featured'
+                    name: 'featured',
+                    orderable: true,
+                    searchable: true
                 },
                 {
                     data: 'status',
-                    name: 'status'
+                    name: 'status',
+                    orderable: true,
+                    searchable: true
                 },
                 {
                     data: 'action',
                     name: 'action',
                     orderable: false,
                     searchable: false
-                },
+                }
             ]
         });
     });
-</script>
 
-<script>
     $(document).on('click', '#delete', function(e) {
         e.preventDefault();
 

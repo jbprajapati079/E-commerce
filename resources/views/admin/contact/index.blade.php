@@ -39,7 +39,7 @@
         $('#contacttable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ route('contact.index') }}",
+            ajax: "{{ route('admin.contact.index') }}",
             columns: [{
                     data: 'DT_RowIndex',
                     name: 'DT_RowIndex',
@@ -92,7 +92,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "/contact/delete/" + id,
+                    url: "/admin/contact/delete/" + id,
                     method: "POST",
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),

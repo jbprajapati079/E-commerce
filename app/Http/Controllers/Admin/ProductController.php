@@ -10,10 +10,67 @@ use App\Models\Size;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\DataTables;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+
 
 
 class ProductController extends Controller
 {
+    // public function index(Request $request)
+    // {
+    //     if ($request->ajax()) {
+    //         $data = Product::with(['category', 'brand'])->orderBy('created_at', 'DESC');
+
+    //         return DataTables::of($data)
+    //             ->addIndexColumn()
+    //             ->addColumn('image', function ($row) {
+    //                 $url = asset('product/image/' . $row->image);
+    //                 return '<img src="' . $url . '" width="50" height="50" />';
+    //             })
+    //             ->addColumn('category', function ($row) {
+    //                 return $row->category->name;
+    //             })
+
+    //             ->addColumn('brand', function ($row) {
+    //                 return $row->brand->name;
+    //             })
+
+    //             ->addColumn('stock_status', function ($row) {
+    //                 return $row->stock_status === 'in_stock'
+    //                     ? '<span class="badge bg-success">In Stock</span>'
+    //                     : '<span class="badge bg-danger">Out Of Stock</span>';
+    //             })
+
+    //             ->addColumn('status', function ($row) {
+    //                 return $row->status === 'Active'
+    //                     ? '<span class="badge bg-success">Active</span>'
+    //                     : '<span class="badge bg-danger">Inactive</span>';
+    //             })
+
+    //             ->addColumn('featured', function ($row) {
+    //                 return $row->featured == true
+    //                     ? '<span class="badge bg-success">Yes</span>'
+    //                     : '<span class="badge bg-danger">No</span>';
+    //             })
+
+    //             ->addColumn('action', function ($row) {
+    //                 $editUrl = route('product.edit', $row->id);
+    //                 $deleteUrl = route('product.delete', $row->id);
+    //                 $qrUrl = route('product.qr', $row->id);
+    //                 return '
+    //                     <a href="' . $editUrl . '" class="btn btn-sm btn-info">Edit</a>
+    //                     <a href="' . $qrUrl . '" class="btn btn-sm btn-secondary">QR</a>
+    //                     <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="' . $row->id . '" id="delete">Delete</button>
+    //                 ';
+    //             })
+
+    //             ->rawColumns(['image', 'stock_status', 'status', 'featured', 'action'])
+    //             ->make(true);
+    //     }
+
+    //     return view('admin.product.index');
+    // }
+
     public function index(Request $request)
     {
         if ($request->ajax()) {
@@ -25,42 +82,37 @@ class ProductController extends Controller
                     $url = asset('product/image/' . $row->image);
                     return '<img src="' . $url . '" width="50" height="50" />';
                 })
-                ->addColumn('category', function ($row) {
-                    return $row->category->name;
-                })
-
-                ->addColumn('brand', function ($row) {
-                    return $row->brand->name;
-                })
-
+                ->addColumn('category', fn ($row) => $row->category->name)
+                ->addColumn('brand', fn ($row) => $row->brand->name)
                 ->addColumn('stock_status', function ($row) {
                     return $row->stock_status === 'in_stock'
                         ? '<span class="badge bg-success">In Stock</span>'
                         : '<span class="badge bg-danger">Out Of Stock</span>';
                 })
-
                 ->addColumn('status', function ($row) {
                     return $row->status === 'Active'
                         ? '<span class="badge bg-success">Active</span>'
                         : '<span class="badge bg-danger">Inactive</span>';
                 })
-
                 ->addColumn('featured', function ($row) {
-                    return $row->featured == true
+                    return $row->featured
                         ? '<span class="badge bg-success">Yes</span>'
                         : '<span class="badge bg-danger">No</span>';
                 })
-
+                ->addColumn('qr_code', function ($row) {
+                    return QrCode::size(100)->generate($row->id); // encode product ID
+                })
                 ->addColumn('action', function ($row) {
+                    $viewUrl = route('product.view', $row->id);
                     $editUrl = route('product.edit', $row->id);
                     $deleteUrl = route('product.delete', $row->id);
                     return '
-                        <a href="' . $editUrl . '" class="btn btn-sm btn-info">Edit</a>
-                        <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="' . $row->id . '" id="delete">Delete</button>
-                    ';
+                    <a href="' . $viewUrl . '" class="btn btn-sm btn-warning">View</a>
+                    <a href="' . $editUrl . '" class="btn btn-sm btn-info">Edit</a>
+                    <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="' . $row->id . '" id="delete">Delete</button>
+                ';
                 })
-
-                ->rawColumns(['image', 'stock_status', 'status', 'featured', 'action'])
+                ->rawColumns(['image', 'stock_status', 'status', 'featured', 'qr_code', 'action'])
                 ->make(true);
         }
 
@@ -160,7 +212,7 @@ class ProductController extends Controller
             $brands = Brand::where('status', 'Active')->get();
             $sizes = Size::all();
             $data = Product::findOrFail($id);
-            return view('admin.product.edit', compact(['categories', 'brands', 'data','sizes']));
+            return view('admin.product.edit', compact(['categories', 'brands', 'data', 'sizes']));
         } catch (\Throwable $th) {
             throw $th;
         }
@@ -257,6 +309,19 @@ class ProductController extends Controller
                 'message' => 'Product deleted successfully!',
                 'redirect' => route('product.index')
             ]);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
+   
+
+    public function viewProductFromQr($id)
+    {
+
+        try {
+            $product = Product::with(['category', 'brand'])->findOrFail($id);
+            return view('admin.product.detail', compact('product'));
         } catch (\Throwable $th) {
             throw $th;
         }

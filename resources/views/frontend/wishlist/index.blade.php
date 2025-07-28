@@ -28,9 +28,11 @@
             </a>
         </div>
 
+        @if($items->count()>0)
         <div class="mt-3">
             <button class="btn btn-light" id="clear-cart-btn">CLEAR WISHLIST</button>
         </div>
+        @endif
         <div class="shopping-cart">
 
             @if($items->count()>0)

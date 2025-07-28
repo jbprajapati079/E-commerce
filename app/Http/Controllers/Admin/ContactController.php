@@ -38,7 +38,7 @@ class ContactController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Contact deleted successfully!',
-                'redirect' => route('contact.index')
+                'redirect' => route('admin.contact.index')
             ]);
         } catch (\Throwable $th) {
             throw $th;
